@@ -85,8 +85,6 @@ int main()
 
     for(auto d : data) {
         auto [str, val] = d;
-        // debug2(s, v);
-
         if(abs(val - 10) < eps) {
             cout << str << " is 10." << endl;
         }
