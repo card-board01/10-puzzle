@@ -1,79 +1,80 @@
 #include <iostream>
 #include <vector>
-#include <iomanip>
 using namespace std;
-using ll = long long;
-using ld = long double;
 
 #define debug1(x1) std::cout << #x1 << ": " << (x1) << std::endl;
 #define debug2(x1, x2) std::cout << #x1 << ": " << (x1) << "	" << #x2 << ": " << (x2) << std::endl;
 #define debug3(x1, x2, x3) std::cout << #x1 << ": " << (x1) << "	" << #x2 << ": " << (x2) << "	" << #x3 << ": " << (x3) << std::endl;
 
-const double eps = 0.0001;
+constexpr double eps = 0.0001;
+
+// to print vector easily
+template<typename T>
+ostream &operator<<(ostream &os, std::vector<T> &vec) {
+    os << "[";
+    for(int i = 0; i < vec.size(); i++) {
+        os << vec[i] << (i + 1 == vec.size() ? "" : " ");
+    }
+    os << "]";
+    return os;
+}
 
 vector<pair<string, double>> recursion(vector<double> operands) {
+    // debug1(operands);
     int n = (int) operands.size();
 
-    debug1(n);
-    cout << "operands is ";
-    for(auto  x : operands) cout << x << " ";
-    cout << endl;
-    cout << "-----" << endl;
-
     if(n == 1) {
-        int v = operands[0];
-        return { { to_string(v), v} };      // initializer list
+        int val = operands[0];
+        string str = to_string(val);
+        return { { str, val } };      // initializer list
     }
-
-    cout << "aaaa" << endl;
 
     vector<pair<string, double>> res;
     for(int i = 1; i < n; i++) {
+        // decompose vector operands into l/r
         vector<double> l;
         vector<double> r;
         copy(operands.begin(), operands.begin() + i, back_inserter(l));
         copy(operands.begin() + i, operands.end(), back_inserter(r));
 
-        cout << "l is " << endl;
-        for(auto x : l) debug1(x);
-        cout << endl;
-        cout << "r is " << endl;
-        for(auto x : r) debug1(x);
-        cout << endl;
-        cout << "---------" << endl;
+        // debug1(l);
+        // debug1(r);
+        // cout << "---------" << endl;
 
         vector<pair<string, double>> left = recursion(l);
         vector<pair<string, double>> right = recursion(r);
 
-
-
+        // combine two factors
         for(int left_i = 0; left_i < left.size(); left_i++) {
             for(int right_i = 0; right_i < right.size(); right_i++) {
-                auto [ls, lv] = left[left_i];
-                auto [rs, rv] = right[right_i];
+                auto [left_str, left_val] = left[left_i];
+                auto [right_str, right_val] = right[right_i];
 
-                debug2(ls, lv);
-                debug2(rs, rv);
+                string res_str;
+                double res_val;
 
-                string sres = "(" + ls + " " + "+" + " " + rs + ")";
-                double vres = lv + rv;
-                res.push_back({sres, vres});
-                sres = "(" + ls + " " + "-" + " " + rs + ")";
-                vres = lv - rv;
-                res.push_back({sres, vres});
-                sres = "(" + ls + " " + "*" + " " + rs + ")";
-                vres = lv * rv;
-                res.push_back({sres, vres});
-                sres = "(" + ls + " " + "/" + " " + rs + ")";
-                vres = lv / rv;
-                res.push_back({sres, vres});
+                // add
+                res_str = "(" + left_str + " " + "+" + " " + right_str + ")";
+                res_val = left_val + right_val;
+                res.push_back({res_str, res_val});
+
+                // subtract
+                res_str = "(" + left_str + " " + "-" + " " + right_str + ")";
+                res_val = left_val - right_val;
+                res.push_back({res_str, res_val});
+
+                // multiply 
+                res_str = "(" + left_str + " " + "*" + " " + right_str + ")";
+                res_val = left_val * right_val;
+                res.push_back({res_str, res_val});
+
+                // divide
+                res_str = "(" + left_str + " " + "/" + " " + right_str + ")";
+                res_val = left_val / right_val;
+                res.push_back({res_str, res_val});
             }
         }
-
-        // return {{ "stop" , 0}};
-
     }
-
     return res;
 }
 
@@ -83,25 +84,13 @@ int main()
     auto data = recursion(in);
 
     for(auto d : data) {
-        auto [s, v] = d;
+        auto [str, val] = d;
         // debug2(s, v);
 
-        if(abs(v - 10) < eps) {
-            cout << s << " is 10." << endl;
+        if(abs(val - 10) < eps) {
+            cout << str << " is 10." << endl;
         }
-
     }
-
-
-    vector<double> L, R;
-    for(int i = 1; i < in.size(); i++) {
-        copy(in.begin(), in.begin() + i, back_inserter(L));
-        copy(in.begin() + i, in.end(), back_inserter(R));
-    }
-
-
-
-
 
     return 0;
 }
